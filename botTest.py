@@ -10,10 +10,10 @@ except:
 
 botVersion = 0.1
 prefix = "!"
-startup_extensions = ["modCommands"]
+startup_extensions = ["modCommands", "userCommands"]
 
 # Here you can modify the bot's prefix and description and wether it sends help in direct messages or not.
-client = Bot(description="Testing 123!", command_prefix=prefix, pm_help = True)
+client = Bot(description="Here are some commands for you to try!", command_prefix=prefix, pm_help = True)
 
 #Test Code
 @client.event
@@ -26,15 +26,25 @@ async def on_ready():
     print('https://discordapp.com/oauth2/authorize?client_id={}&scope=bot&permissions=8'.format(client.user.id))
     print('--------')
 
-
-#This is a basic example of a call and response command. You tell it do "this" and it does it.
 @client.command()
-async def ping():
-    await client.say(":ping_pong: Pong!")
-   
+async def reloadCodeBase():
+    for extension in startup_extensions:
+        try:
+            client.unload_extension(extension)
+            
+            await client.say("Reloading: {}".format(extension))
+            await asyncio.sleep(0.5)
+            
+            client.load_extension(extension)
+        except Exception as e:
+            exc = '{}: {}'.format(type(e).__name__, e)
+            print('Failed to load extension {}\n{}'.format(extension, exc))
+
+#Add our modules.
 if __name__ == "__main__":
     for extension in startup_extensions:
         try:
+            
             client.load_extension(extension)
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
