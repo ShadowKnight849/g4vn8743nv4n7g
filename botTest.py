@@ -27,24 +27,29 @@ async def on_ready():
     print('--------')
 
 @client.command()
-async def reloadCodeBase():
+@commands.has_permissions(manage_channels=True)
+async def loadbot():
     for extension in startup_extensions:
         try:
             client.unload_extension(extension)
-            
+
             await client.say("Reloading: {}".format(extension))
             await asyncio.sleep(0.5)
-            
+
             client.load_extension(extension)
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))
 
+@client.listen
+async def on_member_join(member):
+    await client.say("Welcome: " + member.nick)
+
 #Add our modules.
 if __name__ == "__main__":
     for extension in startup_extensions:
         try:
-            
+
             client.load_extension(extension)
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
